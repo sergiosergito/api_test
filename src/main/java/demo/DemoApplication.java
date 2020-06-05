@@ -1,7 +1,10 @@
 package demo;
 
+import java.io.File;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,12 +15,36 @@ import org.springframework.stereotype.*;
 @SpringBootApplication
 public class DemoApplication 
         {
+	static final String TABLAPLANES= "PLANES";
+	
+	private boolean tableExists(String name) {
+		Connection con = null;
+	    boolean answer = false;
+		try {
+	      Class.forName("org.sqlite.JDBC");
+	      //con = DriverManager.getConnection("jdbc:sqlite:test.db");
+	      //con = DriverManager.getConnection("jdbc:sqlite:C:Users/sergi/eclipse-workspace/7_project_Tarifario/ArquisoftCDRMaven/test.db");
+	      con = DriverManager.getConnection("jdbc:sqlite:c:\\\\Users\\\\sergi\\\\eclipse-workspace\\\\7_project_Tarifario\\\\ArquisoftCDRMaven\\\\test.db");
+	      
+	      DatabaseMetaData meta = con.getMetaData();
+	      ResultSet tables = meta.getTables(null, null, name, null);
+		  		if (tables.next())
+		  		  answer =  true;
+	      con.close();
+	    } catch (Exception e) {
+	      System.err.println("Exception: "+e.getMessage());
+	    }
+		return answer;
+	}
+	
         ////////////////////////////////////////////////
 	public void connect() {
-		Connection c = null;
+		Connection con = null;
 	      try {
 	         Class.forName("org.sqlite.JDBC");
-	         c = DriverManager.getConnection("jdbc:sqlite:test.db");
+	         //c = DriverManager.getConnection("jdbc:sqlite:C:Users/sergi/eclipse-workspace/7_project_Tarifario/ArquisoftCDRMaven/test.db");
+	         //c = DriverManager.getConnection("jdbc:sqlite:'C:Users/sergi/eclipse-workspace/7_project_Tarifario/ArquisoftCDRMaven/test.db'");
+	         con = DriverManager.getConnection("jdbc:sqlite:c:\\\\Users\\\\sergi\\\\eclipse-workspace\\\\7_project_Tarifario\\\\ArquisoftCDRMaven\\\\test.db");
 	      } catch ( Exception e ) {
 	         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 	         System.exit(0);
@@ -31,6 +58,14 @@ public class DemoApplication
     String home()       
         {
     	connect();
+    	/*
+    	File file = new File("c:\\Users\\sergi\\eclipse-workspace\\7_project_Tarifario\\ArquisoftCDRMaven\\test.db");
+    	if (!file.isDirectory())
+    	   file = file.getParentFile();
+    	if (file.exists()){
+    	    System.out.println("DB encontrada");
+    	}
+    	*/
         return "Hello World from Sergio!";
         }
         ////////////////////////////////////////////////
@@ -75,8 +110,12 @@ public class DemoApplication
         {
         // TODO: ADD CODE TO ACCEPT PARAMETERS HERE.
         // TODO: ADD CODE TO QUERY THE DATABASE HERE.
-
-        String response = "Called /v1/fruits/check.";
+    	String response = "Called /v1/fruits/check.";
+    	if(tableExists(TABLAPLANES))
+    		response = "yesss";
+    	else
+    		response = "not the correct db";
+        
         return response;
         }
         ////////////////////////////////////////////////

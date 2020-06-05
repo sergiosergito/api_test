@@ -13,18 +13,17 @@ import org.springframework.stereotype.*;
 
 @Controller
 @SpringBootApplication
-public class DemoApplication 
-        {
-	static final String TABLAPLANES= "PLANES";
+public class DemoApplication {
 	
-	private boolean tableExists(String name) {
+	static final String TABLALINEA= "LINEA";
+	static final String DATABASELOCATION= "jdbc:sqlite:c:\\\\Users\\\\sergi\\\\eclipse-workspace\\\\7_project_Tarifario\\\\ArquisoftCDRMaven\\\\test.db";
+	
+	public boolean tableExists(String name) {
 		Connection con = null;
 	    boolean answer = false;
 		try {
 	      Class.forName("org.sqlite.JDBC");
-	      //con = DriverManager.getConnection("jdbc:sqlite:test.db");
-	      //con = DriverManager.getConnection("jdbc:sqlite:C:Users/sergi/eclipse-workspace/7_project_Tarifario/ArquisoftCDRMaven/test.db");
-	      con = DriverManager.getConnection("jdbc:sqlite:c:\\\\Users\\\\sergi\\\\eclipse-workspace\\\\7_project_Tarifario\\\\ArquisoftCDRMaven\\\\test.db");
+	      con = DriverManager.getConnection(DATABASELOCATION);
 	      
 	      DatabaseMetaData meta = con.getMetaData();
 	      ResultSet tables = meta.getTables(null, null, name, null);
@@ -37,95 +36,41 @@ public class DemoApplication
 		return answer;
 	}
 	
-        ////////////////////////////////////////////////
-	public void connect() {
+	public boolean connect() {
 		Connection con = null;
+		boolean response = false;
 	      try {
 	         Class.forName("org.sqlite.JDBC");
-	         //c = DriverManager.getConnection("jdbc:sqlite:C:Users/sergi/eclipse-workspace/7_project_Tarifario/ArquisoftCDRMaven/test.db");
-	         //c = DriverManager.getConnection("jdbc:sqlite:'C:Users/sergi/eclipse-workspace/7_project_Tarifario/ArquisoftCDRMaven/test.db'");
-	         con = DriverManager.getConnection("jdbc:sqlite:c:\\\\Users\\\\sergi\\\\eclipse-workspace\\\\7_project_Tarifario\\\\ArquisoftCDRMaven\\\\test.db");
+	         con = DriverManager.getConnection(DATABASELOCATION);
+	         response =  true;
 	      } catch ( Exception e ) {
 	         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 	         System.exit(0);
 	      }
+	      return response;
 	}
-	
-	
 	
     @RequestMapping("/")
     @ResponseBody
-    String home()       
-        {
-    	connect();
-    	/*
-    	File file = new File("c:\\Users\\sergi\\eclipse-workspace\\7_project_Tarifario\\ArquisoftCDRMaven\\test.db");
-    	if (!file.isDirectory())
-    	   file = file.getParentFile();
-    	if (file.exists()){
-    	    System.out.println("DB encontrada");
-    	}
-    	*/
-        return "Hello World from Sergio!";
+    String home(){
+    	if(connect())
+    		return "Hello World from Home!";
+    	else return "connection failed";
         }
-        ////////////////////////////////////////////////
-
-
-        ////////////////////////////////////////////////
-        // /v1/fruits/add
-        @RequestMapping(value = "/v1/fruits/add", method=RequestMethod.POST)
+    
+    @RequestMapping(value = "/v1/linea/check/all", method=RequestMethod.GET)
     @ResponseBody
-    String FruitsAdd(@RequestParam("fruitname") String fruitname, @RequestParam("quantity") Integer quantity)
-        {
-        // Start the response to return to the API user.
-        String response = "Called /v1/fruits/add.\n";
-        response += "You want to add " + Integer.toString(quantity) + " " + fruitname + "'s.";
-
-        // TODO: ADD CODE TO UPDATE THE DATABASE HERE.
-        
-        return response;
-        }
-        ////////////////////////////////////////////////
-
-
-        ////////////////////////////////////////////////
-        // /v1/fruits/subtract    
-        @RequestMapping(value = "/v1/fruits/subtract", method=RequestMethod.POST)
-    @ResponseBody
-    String FruitsSubtract()     
-        {
-        // TODO: ADD CODE TO ACCEPT PARAMETERS HERE.
-        // TODO: ADD CODE TO UPDATE THE DATABASE HERE.
-
-        return "Called fruits/subtract";
-        }
-        ////////////////////////////////////////////////
-
-
-        ////////////////////////////////////////////////
-        // /v1/fruits/check
-    @RequestMapping(value = "/v1/fruits/check", method=RequestMethod.GET)
-    @ResponseBody
-    String FruitsCheck()        
-        {
-        // TODO: ADD CODE TO ACCEPT PARAMETERS HERE.
-        // TODO: ADD CODE TO QUERY THE DATABASE HERE.
-    	String response = "Called /v1/fruits/check.";
-    	if(tableExists(TABLAPLANES))
+    String LineasCheck(){
+    	String response = "Called /v1/lineas/check.";
+    	if(tableExists(TABLALINEA))
     		response = "yesss";
     	else
     		response = "not the correct db";
-        
         return response;
         }
-        ////////////////////////////////////////////////
-
-
-        ////////////////////////////////////////////////
-        // MAIN
-    public static void main(String[] args) 
-        {
+        
+    public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
-        }
-        ////////////////////////////////////////////////
-        }
+    }
+
+}

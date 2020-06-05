@@ -1,5 +1,8 @@
 package demo;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.*;
@@ -10,10 +13,24 @@ import org.springframework.stereotype.*;
 public class DemoApplication 
         {
         ////////////////////////////////////////////////
+	public void connect() {
+		Connection c = null;
+	      try {
+	         Class.forName("org.sqlite.JDBC");
+	         c = DriverManager.getConnection("jdbc:sqlite:test.db");
+	      } catch ( Exception e ) {
+	         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+	         System.exit(0);
+	      }
+	}
+	
+	
+	
     @RequestMapping("/")
     @ResponseBody
     String home()       
         {
+    	connect();
         return "Hello World from Sergio!";
         }
         ////////////////////////////////////////////////
